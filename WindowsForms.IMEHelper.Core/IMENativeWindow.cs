@@ -353,7 +353,10 @@ namespace WindowsForms.IMEHelper
                     for (int i = 0; i < cList.dwCount; i++)
                     {
                         int sOffset = Marshal.ReadInt32(pointer, 24 + 4 * i);
-                        Candidates[i] = Marshal.PtrToStringUni((IntPtr)(pointer.ToInt32() + sOffset));
+                        if (IntPtr.Size == 4)
+                            Candidates[i] = Marshal.PtrToStringUni((IntPtr)(pointer.ToInt32() + sOffset));
+                        else
+                            Candidates[i] = Marshal.PtrToStringUni((IntPtr)(pointer.ToInt64() + sOffset));
                     }
 
                     if (CandidatesReceived != null)
