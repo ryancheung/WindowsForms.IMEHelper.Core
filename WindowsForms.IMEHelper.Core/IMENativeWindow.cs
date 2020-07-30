@@ -182,19 +182,19 @@ namespace WindowsForms.IMEHelper
         /// <param name="showDefaultIMEWindow">True if you want to display the default IME window</param>
         public IMENativeWindow(IntPtr handle, bool showDefaultIMEWindow = false)
         {
-            this._context = IntPtr.Zero;
+            this._context = _context = IMM.ImmCreateContext();
             this.Candidates = new string[0];
-            this._compcurpos = new IMMCompositionInt(IMM.GCSCursorPos);
-            this._compstr = new IMMCompositionString(IMM.GCSCompStr);
-            this._compclause = new IMMCompositionString(IMM.GCSCompClause);
-            this._compattr = new IMMCompositionString(IMM.GCSCompAttr);
-            this._compread = new IMMCompositionString(IMM.GCSCompReadStr);
-            this._compreadclause = new IMMCompositionString(IMM.GCSCompReadClause);
-            this._compreadattr = new IMMCompositionString(IMM.GCSCompReadAttr);
-            this._resstr = new IMMCompositionString(IMM.GCSResultStr);
-            this._resclause = new IMMCompositionString(IMM.GCSResultClause);
-            this._resread = new IMMCompositionString(IMM.GCSResultReadStr);
-            this._resreadclause = new IMMCompositionString(IMM.GCSResultReadClause);
+            this._compcurpos = new IMMCompositionInt(IMM.GCSCursorPos, _context);
+            this._compstr = new IMMCompositionString(IMM.GCSCompStr, _context);
+            this._compclause = new IMMCompositionString(IMM.GCSCompClause, _context);
+            this._compattr = new IMMCompositionString(IMM.GCSCompAttr, _context);
+            this._compread = new IMMCompositionString(IMM.GCSCompReadStr, _context);
+            this._compreadclause = new IMMCompositionString(IMM.GCSCompReadClause, _context);
+            this._compreadattr = new IMMCompositionString(IMM.GCSCompReadAttr, _context);
+            this._resstr = new IMMCompositionString(IMM.GCSResultStr, _context);
+            this._resclause = new IMMCompositionString(IMM.GCSResultClause, _context);
+            this._resread = new IMMCompositionString(IMM.GCSResultReadStr, _context);
+            this._resreadclause = new IMMCompositionString(IMM.GCSResultReadClause, _context);
             this._showIMEWin = showDefaultIMEWindow;
             AssignHandle(handle);
         }
@@ -206,14 +206,7 @@ namespace WindowsForms.IMEHelper
         {
             IsEnabled = true;
 
-            if (_context != IntPtr.Zero)
-            {
-                IMM.ImmAssociateContext(Handle, _context);
-                return;
-            }
-
-            // This fix the bug that _context is 0 on fullscreen mode.
-            ImeContext.Enable(Handle);
+            IMM.ImmAssociateContext(Handle, _context);
         }
 
         /// <summary>
@@ -224,7 +217,6 @@ namespace WindowsForms.IMEHelper
             IsEnabled = false;
 
             IMM.ImmAssociateContext(Handle, IntPtr.Zero);
-            IMM.ImmReleaseContext(Handle, _context);
         }
 
         /// <summary>
@@ -293,24 +285,6 @@ namespace WindowsForms.IMEHelper
         {
             if (msg.WParam.ToInt32() == 1)
             {
-                IntPtr ptr = IMM.ImmGetContext(Handle);
-                if (_context == IntPtr.Zero)
-                    _context = ptr;
-                else if (ptr == IntPtr.Zero && IsEnabled)
-                    EnableIME();
-
-                _compcurpos.IMEHandle = _context;
-                _compstr.IMEHandle = _context;
-                _compclause.IMEHandle = _context;
-                _compattr.IMEHandle = _context;
-                _compread.IMEHandle = _context;
-                _compreadclause.IMEHandle = _context;
-                _compreadattr.IMEHandle = _context;
-                _resstr.IMEHandle = _context;
-                _resclause.IMEHandle = _context;
-                _resread.IMEHandle = _context;
-                _resreadclause.IMEHandle = _context;
-
                 if (!_showIMEWin)
                     msg.LParam = (IntPtr)0;
             }

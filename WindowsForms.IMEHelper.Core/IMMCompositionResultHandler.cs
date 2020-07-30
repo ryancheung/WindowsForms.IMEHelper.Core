@@ -12,10 +12,10 @@ namespace WindowsForms.IMEHelper
 
         public int Flag { get; private set; }
 
-        internal IMMCompositionResultHandler(int flag)
+        internal IMMCompositionResultHandler(int flag, IntPtr imeContxt)
         {
             this.Flag = flag;
-            this.IMEHandle = IntPtr.Zero;
+            this.IMEHandle = imeContxt;
         }
 
         internal virtual void Update() { }
@@ -41,7 +41,7 @@ namespace WindowsForms.IMEHelper
 
         public byte this[int index] { get { return _values[index]; } }
 
-        internal IMMCompositionString(int flag) : base(flag)
+        internal IMMCompositionString(int flag, IntPtr imeContext) : base(flag, imeContext)
         {
             Clear();
         }
@@ -90,7 +90,7 @@ namespace WindowsForms.IMEHelper
     {
         public int Value { get; private set; }
 
-        internal IMMCompositionInt(int flag) : base(flag) { }
+        internal IMMCompositionInt(int flag, IntPtr imeContext) : base(flag, imeContext) { }
 
         public override string ToString()
         {

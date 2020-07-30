@@ -60,6 +60,12 @@ namespace WindowsForms.IMEHelper
         #endregion
 
         [DllImport("imm32.dll", SetLastError = true)]
+        public static extern IntPtr ImmCreateContext();
+
+        [DllImport("imm32.dll", SetLastError = true)]
+        public static extern bool ImmDestroyContext(IntPtr hIMC);
+
+        [DllImport("imm32.dll", SetLastError = true)]
         public static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
 
         [DllImport("imm32.dll", SetLastError = true)]
