@@ -236,7 +236,14 @@ namespace WindowsForms.IMEHelper
             switch (msg.Msg)
             {
                 case IMM.ImeSetContext:
-                    IMESetContext(ref msg);
+                    if (msg.WParam.ToInt32() == 1)
+                    {
+                        if (!_showIMEWin)
+                        {
+                            msg.LParam = IntPtr.Zero;
+                        }
+                    }
+
                     break;
                 case IMM.InputLanguageChange:
                     return;
@@ -280,15 +287,6 @@ namespace WindowsForms.IMEHelper
         }
 
         #region IME Message Handlers
-
-        private void IMESetContext(ref Message msg)
-        {
-            if (msg.WParam.ToInt32() == 1)
-            {
-                if (!_showIMEWin)
-                    msg.LParam = (IntPtr)0;
-            }
-        }
 
         private void IMENotify(int WParam)
         {
