@@ -19,6 +19,9 @@ namespace WindowsForms.IMEHelper.Core
         const int UnicodeSimplifiedChineseMax = 0x9FA5;
         const string DefaultChar = "?";
 
+        public static TSF TSF;
+
+
         public Form1()
         {
             InitializeComponent();
@@ -53,10 +56,17 @@ namespace WindowsForms.IMEHelper.Core
 
             this.CenterToScreen();
             textBoxResult.Text = string.Empty;
+
+            TSF = new TSF();//Need to init at STA Thread
+            TSF.AssociateFocus(Handle);//Window need to create in a STA Thread
+            TSF.Active();
+            TSF.CreateContext(Handle);
+            TSF.PushContext();
         }
 
         private void Application_Idle(object sender, EventArgs e)
         {
+            TSF.PumpMsg(Handle);
             FakeDraw();
         }
 
@@ -76,15 +86,15 @@ namespace WindowsForms.IMEHelper.Core
             for (int i = 0; i < imeHandler.Composition.Length; i++)
             {
                 string val = imeHandler.Composition[i].ToString();
-                switch (imeHandler.GetCompositionAttr(i))
-                {
-                    case CompositionAttributes.Converted: compColor = Color.LightGreen; break;
-                    case CompositionAttributes.FixedConverted: compColor = Color.Gray; break;
-                    case CompositionAttributes.Input: compColor = Color.Orange; break;
-                    case CompositionAttributes.InputError: compColor = Color.Red; break;
-                    case CompositionAttributes.TargetConverted: compColor = Color.Yellow; break;
-                    case CompositionAttributes.TargetNotConverted: compColor = Color.SkyBlue; break;
-                }
+                //switch (imeHandler.GetCompositionAttr(i))
+                //{
+                //    case CompositionAttributes.Converted: compColor = Color.LightGreen; break;
+                //    case CompositionAttributes.FixedConverted: compColor = Color.Gray; break;
+                //    case CompositionAttributes.Input: compColor = Color.Orange; break;
+                //    case CompositionAttributes.InputError: compColor = Color.Red; break;
+                //    case CompositionAttributes.TargetConverted: compColor = Color.Yellow; break;
+                //    case CompositionAttributes.TargetNotConverted: compColor = Color.SkyBlue; break;
+                //}
 
                 if (val[0] > UnicodeSimplifiedChineseMax)
                     val = DefaultChar;

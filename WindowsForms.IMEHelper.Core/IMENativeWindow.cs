@@ -60,7 +60,6 @@ namespace WindowsForms.IMEHelper
     /// </summary>
     public sealed class IMENativeWindow : NativeWindow, IDisposable
     {
-
         private IMMCompositionString
             _compstr, _compclause, _compattr,
             _compread, _compreadclause, _compreadattr,
@@ -78,7 +77,9 @@ namespace WindowsForms.IMEHelper
         /// <summary>
         /// Composition String
         /// </summary>
-        public string CompositionString { get { return _compstr.ToString(); } }
+        private string _CompositionString = string.Empty;
+        public string CompositionString { get { return _CompositionString; } }
+        //public string CompositionString { get { return _compstr.ToString(); } }
 
         /// <summary>
         /// Composition Clause
@@ -206,6 +207,8 @@ namespace WindowsForms.IMEHelper
         {
             IsEnabled = true;
 
+            Core.Form1.TSF.SetEnable(true);
+
             IMM.ImmAssociateContext(Handle, _context);
         }
 
@@ -215,6 +218,7 @@ namespace WindowsForms.IMEHelper
         public void DisableIME()
         {
             IsEnabled = false;
+            Core.Form1.TSF.SetEnable(false);
 
             IMM.ImmAssociateContext(Handle, IntPtr.Zero);
         }
@@ -264,6 +268,27 @@ namespace WindowsForms.IMEHelper
                 case IMM.Char:
                     CharEvent(msg.WParam.ToInt32());
                     break;
+                case 0x060F:
+                case 0x0606:
+                case 0x060E:
+                case 0x060D:
+                case 0x060C:
+                case 0x060B:
+                case 0x060A:
+                case 0x0609:
+                    break;
+                case 0x0F01:
+                    _CompositionString = Marshal.PtrToStringAuto(msg.LParam);
+                    break;
+                case 0x0F02:
+                    _CompositionString = Marshal.PtrToStringAuto(msg.LParam);
+                    break;
+                case 0x0F03:
+                    var str = Marshal.PtrToStringAuto(msg.LParam);
+                    foreach (var c in str)
+                        CharEvent((int)c);
+                    break;
+
             }
             base.WndProc(ref msg);
         }

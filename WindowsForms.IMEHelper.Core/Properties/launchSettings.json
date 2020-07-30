@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WindowsForms.IMEHelper.Core": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
