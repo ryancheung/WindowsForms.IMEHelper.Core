@@ -235,6 +235,24 @@ namespace WindowsForms.IMEHelper
             }
         }
 
+        private const int TF_UNLOCKED = 0x060F;
+        private const int TF_LOCKED = 0x0606;
+        private const int TF_GETTEXTLENGTH = 0x060E;
+        private const int TF_GETTEXT = 0x060D;
+        private const int TF_CLEARTEXT = 0x060C;
+        private const int TF_GETTEXTEXT = 0x060B;
+        private const int TF_QUERYINSERT = 0x060A;
+        private const int TF_GETSELSTATE = 0x0609;
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        };
+
         protected override void WndProc(ref Message msg)
         {
             switch (msg.Msg)
@@ -268,14 +286,10 @@ namespace WindowsForms.IMEHelper
                 case IMM.Char:
                     CharEvent(msg.WParam.ToInt32());
                     break;
-                case 0x060F:
-                case 0x0606:
-                case 0x060E:
-                case 0x060D:
-                case 0x060C:
-                case 0x060B:
-                case 0x060A:
-                case 0x0609:
+                case TF_GETTEXTEXT:
+                    // Set OS candidate window position.
+                    var rect = new RECT { Left = 600, Top = 400, Right = 100, Bottom = 420 };
+                    Marshal.StructureToPtr(rect, msg.WParam, false);//text ext
                     break;
                 case 0x0F01:
                     _CompositionString = Marshal.PtrToStringAuto(msg.LParam);
